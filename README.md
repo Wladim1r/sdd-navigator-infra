@@ -15,7 +15,7 @@ and a local subchart gives full traceability over all manifests.
 
 ## Repository Structure
 
-| Директория/файл       | Описание                        |
+| Directory             | Description                     |
 | --------------------- | ------------------------------- |
 | charts/sdd-navigator/ | Helm umbrella chart             |
 | charts/api/           | Rust API subchart               |
@@ -61,8 +61,8 @@ Five parallel jobs on every push:
 
 ## CI Runs
 
-- main (passing): <!-- paste link after first green run -->
-- demo/violation (failing): <!-- paste link after violation run -->
+- main (passing): https://github.com/Wladim1r/sdd-navigator-infra/actions/runs/24384645259
+- demo/violation (failing): https://github.com/Wladim1r/sdd-navigator-infra/actions/runs/24384266878
 
 ## SDD Traceability
 
