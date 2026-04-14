@@ -58,8 +58,9 @@
 - name: Report pods status
   ansible.builtin.debug:
     msg: >-
-      pods:
-      {% if validate_non_running_pods.stdout == '' %}PASS — all pods Running{% else %}FAIL — non-running: {{ validate_non_running_pods.stdout }}{% endif %}
+      pods: {% if validate_non_running_pods.stdout == '' %}PASS
+      — all pods Running{% else %}FAIL
+      — non-running: {{ validate_non_running_pods.stdout }}{% endif %}
 
 - name: Get PostgreSQL pod name
   ansible.builtin.command:
