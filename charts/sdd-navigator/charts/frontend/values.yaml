@@ -19,7 +19,9 @@ resources:
     cpu: 200m
     memory: 128Mi
 
-securityContext:
+podSecurityContext:
   runAsNonRoot: true
   runAsUser: 101
+
+containerSecurityContext:
   allowPrivilegeEscalation: false

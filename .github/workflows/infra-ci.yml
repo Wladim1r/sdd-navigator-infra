@@ -72,7 +72,7 @@ jobs:
       - name: Install yamllint
         run: pip install yamllint
       - name: Run yamllint
-        run: yamllint -d relaxed .
+        run: yamllint -c .yamllint.yml .
 
   traceability:
     # @req SCI-TRACE-001
