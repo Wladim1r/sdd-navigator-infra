@@ -1,0 +1,7 @@
+# @req SCI-HELM-002
+apiVersion: v2
+name: postgresql
+description: PostgreSQL StatefulSet subchart for SDD Navigator
+type: application
+version: 0.1.0
+appVersion: "16.0"

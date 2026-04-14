@@ -1,0 +1,27 @@
+# @req SCI-HELM-002, SCI-HELM-005, SCI-HELM-006, SCI-SEC-001
+
+image:
+  repository: postgres
+  tag: "16-alpine"
+  pullPolicy: IfNotPresent
+
+auth:
+  database: "sdd_navigator"
+  username: "PLACEHOLDER_USER"
+  password: "PLACEHOLDER_PASSWORD"
+
+persistence:
+  enabled: true
+  size: 1Gi
+  storageClass: ""
+
+service:
+  port: 5432
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

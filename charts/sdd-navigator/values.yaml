@@ -1,0 +1,48 @@
+# @req SCI-HELM-001, SCI-HELM-002, SCI-HELM-003, SCI-HELM-004, SCI-HELM-005, SCI-HELM-006
+
+# Global domain settings
+global:
+  domain: "sdd-navigator.example.com"
+
+# Ingress settings — @req SCI-HELM-004
+ingress:
+  enabled: true
+  className: "nginx"
+  host: "sdd-navigator.example.com"
+  tls:
+    enabled: false
+    secretName: "sdd-navigator-tls"
+
+# API subchart values — @req SCI-HELM-001
+api:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/foreach-partners/sdd-coverage
+    tag: "3.0.0"
+  config:
+    apiPort: "8080"
+    logLevel: "info"
+    # Overridden at deploy time by Ansible with actual postgresql host
+    databaseUrl: "postgresql://PLACEHOLDER:PLACEHOLDER@sdd-navigator-postgresql:5432/sdd_navigator"
+  db:
+    user: "PLACEHOLDER_USER"
+    password: "PLACEHOLDER_PASSWORD"
+    name: "sdd_navigator"
+    host: "sdd-navigator-postgresql"
+
+# Frontend subchart values — @req SCI-HELM-003
+frontend:
+  replicaCount: 1
+  image:
+    repository: nginx
+    tag: "1.27-alpine"
+
+# PostgreSQL local subchart — @req SCI-HELM-002
+postgresql:
+  auth:
+    database: "sdd_navigator"
+    username: "PLACEHOLDER_USER"
+    password: "PLACEHOLDER_PASSWORD"
+  persistence:
+    enabled: true
+    size: 1Gi

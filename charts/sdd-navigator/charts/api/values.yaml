@@ -1,0 +1,38 @@
+# @req SCI-HELM-001, SCI-HELM-005, SCI-HELM-006, SCI-SEC-001
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/foreach-partners/sdd-coverage
+  tag: "3.0.0"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
+
+config:
+  apiPort: "8080"
+  logLevel: "info"
+  # Placeholder — MUST be overridden at deploy time
+  databaseUrl: "postgresql://PLACEHOLDER:PLACEHOLDER@PLACEHOLDER:5432/PLACEHOLDER"
+
+# Database credentials — MUST be overridden, never use defaults in production
+db:
+  user: "PLACEHOLDER_USER"
+  password: "PLACEHOLDER_PASSWORD"
+  name: "PLACEHOLDER_DB"
+  host: "sdd-navigator-postgresql"
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  allowPrivilegeEscalation: false
