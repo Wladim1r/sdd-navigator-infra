@@ -8,7 +8,7 @@ image:
 auth:
   database: "sdd_navigator"
   username: "PLACEHOLDER_USER"
-  password: "PLACEHOLDER_PASSWORD"
+  password: "secretpassword123"
 
 persistence:
   enabled: true
