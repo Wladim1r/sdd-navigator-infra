@@ -1,0 +1,88 @@
+# @req SCI-ANS-002
+---
+- name: Get API pod name
+  ansible.builtin.command:
+    cmd: >
+      kubectl get pod
+      --selector=app.kubernetes.io/name=api
+      --namespace {{ k8s_namespace }}
+      --output=jsonpath={.items[0].metadata.name}
+  register: validate_api_pod
+  changed_when: false
+
+- name: Check API healthcheck endpoint
+  ansible.builtin.command:
+    cmd: >
+      kubectl exec {{ validate_api_pod.stdout }}
+      --namespace {{ k8s_namespace }}
+      -- wget -qO- http://localhost:8080/healthcheck
+  register: validate_healthcheck_result
+  changed_when: false
+  failed_when: false
+
+- name: Report healthcheck result
+  ansible.builtin.debug:
+    msg: >-
+      healthcheck:
+      {% if 'healthy' in validate_healthcheck_result.stdout %}PASS{% else %}FAIL{% endif %}
+      — {{ validate_healthcheck_result.stdout | default('no response') }}
+
+- name: Check /stats endpoint
+  ansible.builtin.command:
+    cmd: >
+      kubectl exec {{ validate_api_pod.stdout }}
+      --namespace {{ k8s_namespace }}
+      -- wget -qO- http://localhost:8080/stats
+  register: validate_stats_result
+  changed_when: false
+  failed_when: false
+
+- name: Report stats result
+  ansible.builtin.debug:
+    msg: >-
+      stats:
+      {% if validate_stats_result.rc == 0 %}PASS{% else %}FAIL{% endif %}
+      — {{ validate_stats_result.stdout | default('no response') }}
+
+- name: Check all pods Running
+  ansible.builtin.command:
+    cmd: >
+      kubectl get pods
+      --namespace {{ k8s_namespace }}
+      --field-selector=status.phase!=Running
+      --output=jsonpath={.items[*].metadata.name}
+  register: validate_non_running_pods
+  changed_when: false
+  failed_when: false
+
+- name: Report pods status
+  ansible.builtin.debug:
+    msg: >-
+      pods:
+      {% if validate_non_running_pods.stdout == '' %}PASS — all pods Running{% else %}FAIL — non-running: {{ validate_non_running_pods.stdout }}{% endif %}
+
+- name: Get PostgreSQL pod name
+  ansible.builtin.command:
+    cmd: >
+      kubectl get pod
+      --selector=app.kubernetes.io/name=postgresql
+      --namespace {{ k8s_namespace }}
+      --output=jsonpath={.items[0].metadata.name}
+  register: validate_pg_pod
+  changed_when: false
+
+- name: Check PostgreSQL readiness via pg_isready
+  ansible.builtin.command:
+    cmd: >
+      kubectl exec {{ validate_pg_pod.stdout }}
+      --namespace {{ k8s_namespace }}
+      -- pg_isready -U {{ db_user }} -d {{ db_name }}
+  register: validate_pg_result
+  changed_when: false
+  failed_when: false
+
+- name: Report PostgreSQL result
+  ansible.builtin.debug:
+    msg: >-
+      postgresql:
+      {% if validate_pg_result.rc == 0 %}PASS{% else %}FAIL — {{ validate_pg_result.stderr | default('') }}{% endif %}

@@ -1,0 +1,18 @@
+# @req SCI-ANS-001, SCI-ANS-002
+k8s_namespace: sdd-navigator
+release_name: sdd-release
+chart_path: "{{ playbook_dir }}/../charts/sdd-navigator"
+
+api_image: ghcr.io/foreach-partners/sdd-coverage
+api_tag: "3.0.0"
+api_replicas: 1
+
+frontend_image: nginx
+frontend_tag: "1.27-alpine"
+
+db_name: sdd_navigator
+db_user: "{{ lookup('env', 'SDD_DB_USER') | default('PLACEHOLDER_USER', true) }}"
+db_password: "{{ lookup('env', 'SDD_DB_PASSWORD') | default('PLACEHOLDER_PASSWORD', true) }}"
+
+domain: sdd-navigator.example.com
+tls_enabled: false

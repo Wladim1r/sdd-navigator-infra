@@ -1,0 +1,62 @@
+# @req SCI-ANS-001, SCI-ANS-003
+---
+- name: Create namespace
+  ansible.builtin.command:
+    cmd: kubectl create namespace {{ k8s_namespace }}
+  register: deploy_ns_result
+  changed_when: deploy_ns_result.rc == 0
+  failed_when: deploy_ns_result.rc != 0 and 'already exists' not in deploy_ns_result.stderr
+
+- name: Deploy Helm chart
+  ansible.builtin.command:
+    cmd: >
+      helm upgrade --install {{ release_name }}
+      {{ chart_path }}
+      --namespace {{ k8s_namespace }}
+      --wait
+      --timeout 5m
+      --set api.image.repository={{ api_image }}
+      --set api.image.tag={{ api_tag }}
+      --set api.replicaCount={{ api_replicas }}
+      --set frontend.image.repository={{ frontend_image }}
+      --set frontend.image.tag={{ frontend_tag }}
+      --set api.db.user={{ db_user }}
+      --set api.db.password={{ db_password }}
+      --set api.db.name={{ db_name }}
+      --set postgresql.auth.username={{ db_user }}
+      --set postgresql.auth.password={{ db_password }}
+      --set postgresql.auth.database={{ db_name }}
+      --set ingress.host={{ domain }}
+      --set ingress.tls.enabled={{ tls_enabled }}
+  register: deploy_helm_result
+  changed_when: >
+    'has been upgraded' in deploy_helm_result.stdout or
+    'has been deployed' in deploy_helm_result.stdout
+
+- name: Wait for API deployment
+  ansible.builtin.command:
+    cmd: >
+      kubectl wait deployment/{{ release_name }}-api
+      --for=condition=Available
+      --timeout=120s
+      --namespace {{ k8s_namespace }}
+  changed_when: false
+
+- name: Wait for frontend deployment
+  ansible.builtin.command:
+    cmd: >
+      kubectl wait deployment/{{ release_name }}-frontend
+      --for=condition=Available
+      --timeout=120s
+      --namespace {{ k8s_namespace }}
+  changed_when: false
+
+- name: Wait for PostgreSQL pod
+  ansible.builtin.command:
+    cmd: >
+      kubectl wait pod
+      --selector=app.kubernetes.io/name=postgresql
+      --for=condition=Ready
+      --timeout=120s
+      --namespace {{ k8s_namespace }}
+  changed_when: false

@@ -1,0 +1,10 @@
+# @req SCI-ANS-001, SCI-ANS-002, SCI-ANS-003
+---
+- name: Deploy SDD Navigator stack
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  roles:
+    - role: deploy
+    - role: validate
