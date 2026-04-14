@@ -1,4 +1,4 @@
-# @req SCI-ANS-001, SCI-ANS-002, SCI-ANS-003
+# @req SCI-ANS-001, SCI-ANS-002, SCI-ANS-003, SCI-HELM-999
 ---
 - name: Deploy SDD Navigator stack
   hosts: localhost

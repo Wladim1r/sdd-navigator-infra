@@ -9,7 +9,7 @@ on:
 
 jobs:
   helm-lint:
-    # @req SCI-CI-999
+    # @req SCI-HELM-999
     name: Helm Lint
     runs-on: ubuntu-latest
     steps:
